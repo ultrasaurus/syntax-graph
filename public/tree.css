@@ -1,0 +1,38 @@
+body {
+  margin: 20px;
+}
+
+.tree {
+	direction: rtl;
+	font-family: BMitra, 'B Mitra';
+	font-size: 18px;
+	text-align: center;
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+
+.word {
+	fill: #555;
+	cursor: default;
+}
+.tag {
+	fill: #777;
+}
+.edge, .arrow {
+	stroke: #ccc;
+	stroke-width: 1.5;
+}
+.dependency {
+	fill: #ccc;
+}
+
+.dependency.active {
+	fill: #3276b1;
+}
+.word.active {
+  fill: #3276b1;  
+}
+.edge.active, .arrow.active {
+	stroke: #3276b1;
+}
+
