@@ -1,8 +1,23 @@
 wordWidth = 60
 wordHeight = 20
-levelHeight = function(level) {
+function levelHeight(level) {
   return 2 + Math.pow(level, 1.8) * 10;
 }
+
+function under(edge1, edge2) {
+  //[mi, ma] = edge1.id < edge1.parent ? [edge1.id, edge1.parent] : [edge1.parent, edge1.id]
+  [edge1left, edge1right] = edge1.id < edge1.parent ? [edge1.id, edge1.parent] : [edge1.parent, edge1.id];
+  [edge2left, edge2right] = edge2.id < edge2.parent ? [edge2.id, edge2.parent] : [edge2.parent, edge2.id];
+  var result = edge1.id != edge2.id
+            && edge2right >= edge1left 
+            && edge2left >= edge1left 
+            && edge2right <= edge1right 
+            && edge2left <= edge1right
+  // console.log('[mi, ma] ', mi, ma );  
+  console.log(edge1.id, edge2.id);
+  return result;
+}
+
 
 function drawTree(svgElement, data) {
     svg = d3.select(svgElement);
@@ -36,21 +51,63 @@ function drawTree(svgElement, data) {
       svg.selectAll('.tag').attr('opacity', 0)
     })
 
+    // calculate edge level for height of arc
+    data.forEach(function(d, i) { 
+      d.level = 1;
+      d.id = parseInt(i);     
+      d.parent = d.dependencyEdge.headTokenIndex;      
+    });
+    data.forEach(function(edge, i) { 
+      console.log('edge:', edge.text.content, edge.id, edge.text.content, edge.parent)
+      var level = data.reduce(function(level, e) { 
+        console.log('e.parent:', e.parent);
+        console.log('e.id:', e.id);
+        if (e.parent != e.id && under(edge, e)) {
+          if (level < e.level) level = e.level;
+          console.log('yup:', level);          
+          return level;
+        } else return level;
+      },0)
+      edge.level = level + 1;
+      console.log('----------level:', edge.level)
+    });
+    // for (var i in data) {
+    //   var edge = data[i];
+    //   maxLevel = data.reduce(function(result, e) { 
+    //     console.log('edge:', edge);
+    //     console.log('e:', e);
+    //     console.log('e.level:', e.level);
+    //     if (e.level) {
+    //       console.log('under(edge, e)', under(edge, e));
+    //     }
+    //     console.log('result < e.level:', result < e.level);
+    //     if (e.level && under(edge, e)) return e.level;
+    //     else return result;
+    //     //return result < e.level ? e.level : result 
+    //   }, 0)
+    //   console.log('maxLevel', maxLevel)
+    //   edge.level = 1 + maxLevel;     
+    // }
+
     // calculate the shape of the arc
     for (var i in data) {
       var item = data[i];
       console.log('item', i, item);
-      item.id = parseInt(i);
-      item.parent = item.dependencyEdge.headTokenIndex;
       item.root = item.dependencyEdge.label == 'ROOT';
       item.bottom = treeHeight - 1.8 * wordHeight;
-      item.top = 100; //item.bottom - levelHeight(item.level)
+      item.top = item.bottom - levelHeight(item.level)
       item.left = item.id * wordWidth + item.width/2;
       item.right = item.parent * wordWidth + data[item.parent].width / 2;
       item.mid = (item.right+item.left)/2;
       item.diff = (item.right-item.left)/4;
       item.arrow = item.top + (item.bottom-item.top)*.25;
     }
+
+    //compute edge levels
+    // levels = data.map(function(item) { return item.dependencyEdge.headTokenIndex });
+    // levels = d3.set(levels).values();
+    // maxLevel = levels.length;
+    
     
     edges = svg.selectAll('.edge').data(data).enter()
     .append('path')
