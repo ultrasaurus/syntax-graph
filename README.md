@@ -1,6 +1,10 @@
 
 Experiementing with Google Natural Language API, with D3.js visualization.
 
+live demo: https://syntax-graph.firebaseapp.com/
+
+![screenshot showing sentence and dependency tree arcs](doc/screenshot.png)
+
 The dependency tree graph is inspired by 
 * [sobhe's orignal persian visualization](http://www.sobhe.ir/dependency-parse-tree/), source:[sobhe/dependency-parse-tree](https://github.com/sobhe/dependency-parse-tree)
 * [arne-cl](https://github.com/arne-cl/d3-dependency-parse-tree): left-to-right german variant
